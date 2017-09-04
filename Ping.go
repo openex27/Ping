@@ -74,10 +74,8 @@ func Ping(domain string, PS, Count int) {
 	var buffer bytes.Buffer
 	binary.Write(&buffer, binary.BigEndian, icmp)
 	binary.Write(&buffer, binary.BigEndian, originBytes[0:PS])
-	icmp.Checksum = CheckSum(buffer.Bytes())
-	buffer.Reset()
-	binary.Write(&buffer, binary.BigEndian, icmp)
-	binary.Write(&buffer, binary.BigEndian, originBytes[0:PS])
+	b := buffer.Bytes()
+	binary.BigEndian.PutUint16(b[2:], CheckSum(b))
 	fmt.Printf("\n正在 Ping %s 具有 %d(%d) 字节的数据:\n", raddr.String(), PS,PS+28)
 	recv := make([]byte, 1024)
 	ret_list := []float64{}
